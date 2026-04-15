@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do List</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 24px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .subtitle {
+      color: #6b7280;
+      margin-top: -8px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #155e75;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 12px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    button {
+      border: 0;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .btn-primary { background: #111827; color: white; }
+    .btn-secondary { background: #e5e7eb; color: #111827; }
+    .btn-success { background: #16a34a; color: white; }
+    .btn-warning { background: #f59e0b; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 180px 180px;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .stat {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .task-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      background: #fff;
+    }
+    .task-main {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .task-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .task-title {
+      font-size: 16px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+    .task-meta {
+      color: #6b7280;
+      font-size: 13px;
+    }
+    .task-completed .task-title {
+      text-decoration: line-through;
+      color: #6b7280;
+    }
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .priority {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      width: fit-content;
+    }
+    .priority.baixa { background: #ecfdf5; color: #166534; }
+    .priority.media { background: #eff6ff; color: #1d4ed8; }
+    .priority.alta { background: #fef2f2; color: #b91c1c; }
+    .empty {
+      text-align: center;
+      color: #6b7280;
+      padding: 24px;
+      border: 1px dashed #d1d5db;
+      border-radius: 14px;
+    }
+    .small {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 8px;
+    }
+    @media (max-width: 768px) {
+      .form-row, .toolbar {
+        grid-template-columns: 1fr;
+      }
+      .task-item {
+        grid-template-columns: 1fr;
+      }
+      .task-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <span class="badge">Projeto portfólio • To-Do List com localStorage</span>
+      <h1>Lista de Tarefas</h1>
+      <p class="subtitle">Projeto simples para portfólio com adicionar, editar, concluir, excluir e filtrar tarefas.</p>
+
+      <form id="taskForm">
+        <div class="form-row">
+          <input type="text" id="taskInput" placeholder="Digite uma nova tarefa" required />
+          <select id="priorityInput">
+            <option value="baixa">Prioridade baixa</option>
+            <option value="media" selected>Prioridade média</option>
+            <option value="alta">Prioridade alta</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="saveBtn">Adicionar tarefa</button>
+          <button type="button" class="btn-secondary" id="cancelBtn">Cancelar edição</button>
+          <button type="button" class="btn-danger" id="clearCompletedBtn">Remover concluídas</button>
+        </div>
+        <p class="small">As tarefas ficam salvas no navegador usando localStorage.</p>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Minhas tarefas</h2>
+
+      <div class="stats">
+        <div class="stat" id="totalTasks">Total: 0</div>
+        <div class="stat" id="pendingTasks">Pendentes: 0</div>
+        <div class="stat" id="completedTasks">Concluídas: 0</div>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="Pesquisar tarefa" />
+        <select id="filterStatus">
+          <option value="todas">Todas</option>
+          <option value="pendentes">Pendentes</option>
+          <option value="concluidas">Concluídas</option>
+        </select>
+        <select id="sortTasks">
+          <option value="recentes">Mais recentes</option>
+          <option value="antigas">Mais antigas</option>
+          <option value="prioridade">Por prioridade</option>
+        </select>
+      </div>
+
+      <div class="task-list" id="taskList"></div>
+    </div>
+  </div>
+
+  <script>
+    const taskForm = document.getElementById("taskForm");
+    const taskInput = document.getElementById("taskInput");
+    const priorityInput = document.getElementById("priorityInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const clearCompletedBtn = document.getElementById("clearCompletedBtn");
+    const searchInput = document.getElementById("searchInput");
+    const filterStatus = document.getElementById("filterStatus");
+    const sortTasks = document.getElementById("sortTasks");
+    const taskList = document.getElementById("taskList");
+    const totalTasks = document.getElementById("totalTasks");
+    const pendingTasks = document.getElementById("pendingTasks");
+    const completedTasks = document.getElementById("completedTasks");
+
+    let tasks = JSON.parse(localStorage.getItem("todo_tasks")) || [];
+    let editingId = null;
+
+    function saveTasks() {
+      localStorage.setItem("todo_tasks", JSON.stringify(tasks));
+    }
+
+    function generateId() {
+      return Date.now() + Math.floor(Math.random() * 1000);
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString("pt-BR");
+    }
+
+    function clearForm() {
+      taskForm.reset();
+      priorityInput.value = "media";
+      editingId = null;
+      saveBtn.textContent = "Adicionar tarefa";
+    }
+
+    function priorityValue(priority) {
+      const values = { alta: 3, media: 2, baixa: 1 };
+      return values[priority] || 0;
+    }
+
+    function updateStats() {
+      const total = tasks.length;
+      const completed = tasks.filter(task => task.completed).length;
+      const pending = total - completed;
+
+      totalTasks.textContent = `Total: ${total}`;
+      pendingTasks.textContent = `Pendentes: ${pending}`;
+      completedTasks.textContent = `Concluídas: ${completed}`;
+    }
+
+    function getFilteredTasks() {
+      const search = searchInput.value.toLowerCase().trim();
+      const status = filterStatus.value;
+      const sort = sortTasks.value;
+
+      let filtered = tasks.filter(task => {
+        const matchesSearch = task.title.toLowerCase().includes(search);
+        const matchesStatus =
+          status === "todas" ||
+          (status === "pendentes" && !task.completed) ||
+          (status === "concluidas" && task.completed);
+
+        return matchesSearch && matchesStatus;
+      });
+
+      if (sort === "recentes") {
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sort === "antigas") {
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      } else if (sort === "prioridade") {
+        filtered.sort((a, b) => priorityValue(b.priority) - priorityValue(a.priority));
+      }
+
+      return filtered;
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = "";
+      const filteredTasks = getFilteredTasks();
+
+      if (filteredTasks.length === 0) {
+        taskList.innerHTML = '<div class="empty">Nenhuma tarefa encontrada.</div>';
+        updateStats();
+        return;
+      }
+
+      filteredTasks.forEach(task => {
+        const item = document.createElement("div");
+        item.className = `task-item ${task.completed ? "task-completed" : ""}`;
+
+        item.innerHTML = `
+          <div class="task-main">
+            <input type="checkbox" ${task.completed ? "checked" : ""} onchange="toggleTask(${task.id})" />
+            <div class="task-content">
+              <div class="task-title">${task.title}</div>
+              <div class="priority ${task.priority}">Prioridade ${task.priority}</div>
+              <div class="task-meta">Criada em: ${formatDate(task.createdAt)}</div>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="btn-warning" onclick="editTask(${task.id})">Editar</button>
+            <button class="btn-danger" onclick="deleteTask(${task.id})">Excluir</button>
+          </div>
+        `;
+
+        taskList.appendChild(item);
+      });
+
+      updateStats();
+    }
+
+    taskForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const title = taskInput.value.trim();
+      const priority = priorityInput.value;
+
+      if (!title) {
+        alert("Digite uma tarefa.");
+        return;
+      }
+
+      if (editingId) {
+        tasks = tasks.map(task =>
+          task.id === editingId
+            ? { ...task, title, priority }
+            : task
+        );
+      } else {
+        tasks.push({
+          id: generateId(),
+          title,
+          priority,
+          completed: false,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      saveTasks();
+      renderTasks();
+      clearForm();
+    });
+
+    cancelBtn.addEventListener("click", function() {
+      clearForm();
+    });
+
+    clearCompletedBtn.addEventListener("click", function() {
+      const hasCompleted = tasks.some(task => task.completed);
+
+      if (!hasCompleted) {
+        alert("Não há tarefas concluídas para remover.");
+        return;
+      }
+
+      const confirmed = confirm("Deseja remover todas as tarefas concluídas?");
+      if (!confirmed) return;
+
+      tasks = tasks.filter(task => !task.completed);
+      saveTasks();
+      renderTasks();
+
+      if (editingId && !tasks.find(task => task.id === editingId)) {
+        clearForm();
+      }
+    });
+
+    searchInput.addEventListener("input", renderTasks);
+    filterStatus.addEventListener("change", renderTasks);
+    sortTasks.addEventListener("change", renderTasks);
+
+    function toggleTask(id) {
+      tasks = tasks.map(task =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      );
+      saveTasks();
+      renderTasks();
+    }
+
+    function editTask(id) {
+      const task = tasks.find(task => task.id === id);
+      if (!task) return;
+
+      taskInput.value = task.title;
+      priorityInput.value = task.priority;
+      editingId = id;
+      saveBtn.textContent = "Atualizar tarefa";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteTask(id) {
+      const confirmed = confirm("Deseja realmente excluir esta tarefa?");
+      if (!confirmed) return;
+
+      tasks = tasks.filter(task => task.id !== id);
+      saveTasks();
+      renderTasks();
+
+      if (editingId === id) {
+        clearForm();
+      }
+    }
+
+    renderTasks();
+  </script>
+</body>
+</html>
